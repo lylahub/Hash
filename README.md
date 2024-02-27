@@ -3,12 +3,12 @@ TODO introduction
 
 ## Building
 ```shell
-TODO
+make
 ```
 
 ## Running
 ```shell
-TODO how to run and results
+./hash_table_tester -t <num_threads> -s <num_elem_per_thread>
 ```
 
 ## First Implementation
@@ -32,5 +32,5 @@ TODO more results, speedup measurement, and analysis on v2
 
 ## Cleaning up
 ```shell
-TODO how to clean
+make clean
 ```
