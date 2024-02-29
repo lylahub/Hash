@@ -85,11 +85,6 @@ void hash_table_v1_add_entry(struct hash_table_v1 *hash_table,
 
 	struct list_entry *list_entry = get_list_entry(hash_table, key, list_head);
 	
-	// unlock critical section
-	err = pthread_mutex_lock(&mutex);
-	if (err != 0)
-		exit(err);
-
 	/* Update the value if it already exists */
 	if (list_entry != NULL) {
 		list_entry->value = value;
@@ -99,12 +94,6 @@ void hash_table_v1_add_entry(struct hash_table_v1 *hash_table,
 	list_entry = calloc(1, sizeof(struct list_entry));
 	list_entry->key = key;
 	list_entry->value = value;
-	
-	// lock critical section
-	err = pthread_mutex_lock(&mutex);
-	if (err != 0)
-		exit(err);
-
 	SLIST_INSERT_HEAD(list_head, list_entry, pointers);
 	
 	// unlock critical section
