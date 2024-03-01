@@ -20,11 +20,13 @@ In the `hash_table_v1_add_entry` function, I added one mutex lock for the progra
 
 ### Performance
 ```shell
-./hash_table_tester -t 4 -s 100000
-Generation: 119,546 usec
-Hash table base: 1,869,402 usec
+./hash-table-tester -t 4 -s 100000
+Generation: 158,056 usec
+Hash table base: 1,964,421 usec
   - 0 missing
-Hash table v1: 2,837,029 usec
+Hash table v1: 3,583,050 usec
+  - 0 missing
+Hash table v2: 1,245,258 usec
   - 0 missing
 ```
 The thread needs to pass mutex before entering the critical section, which helps prevent race condition.
@@ -37,9 +39,12 @@ In the `hash_table_v2_add_entry` function, I add one lock per bucket for the has
 ### Performance
 ```shell
 ./hash-table-tester -t 4 -s 100000
-Hash table base: 1,271,294 usec
+Generation: 146,019 usec
+Hash table base: 2,035,268 usec
   - 0 missing
-Hash table v2: 581,397 usec
+Hash table v1: 3,516,874 usec
+  - 0 missing
+Hash table v2: 1,212,150 usec
   - 0 missing
 ```
 Analysis:
@@ -49,11 +54,32 @@ By implementing a lock for each individual bucket in the hash table, I enable th
 More tests:
 ```
 ./hash-table-tester -t 4 -s 50000
-Generation: 37,985 usec
-Hash table base: 291,462 usec
+Generation: 75,155 usec
+Hash table base: 375,908 usec
   - 0 missing
-Hash table v2: 101,017 usec
+Hash table v1: 784,610 usec
   - 0 missing
+Hash table v2: 292,436 usec
+  - 0 missing
+
+./hash-table-tester -t 8 -s 50000
+Generation: 132,546 usec
+Hash table base: 1,901,019 usec
+  - 0 missing
+Hash table v1: 2,800,461 usec
+  - 0 missing
+Hash table v2: 1,517,435 usec
+  - 0 missing
+
+python -m unittest
+.Running tester code 1...
+.Running tester code 2...
+.Running tester code 3...
+.
+----------------------------------------------------------------------
+Ran 3 tests in 27.429s
+
+OK
 ```
 
 ## Cleaning up
