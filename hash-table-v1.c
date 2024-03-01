@@ -23,7 +23,7 @@ struct hash_table_v1 {
 	struct hash_table_entry entries[HASH_TABLE_CAPACITY];
 };
 
-// lock
+// mutex lock initialization
 pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 
 struct hash_table_v1 *hash_table_v1_create()
@@ -77,14 +77,15 @@ void hash_table_v1_add_entry(struct hash_table_v1 *hash_table,
 {
 	struct hash_table_entry *hash_table_entry = get_hash_table_entry(hash_table, key);
 	struct list_head *list_head = &hash_table_entry->list_head;
-	
-	// lock critical section
-	int err = pthread_mutex_lock(&mutex);
-	if (err != 0)
-		exit(err);
+
+	// critical section lock
+	int error = pthread_mutex_lock(&mutex);
+	if (error != 0) {
+		exit(error);
+	}
 
 	struct list_entry *list_entry = get_list_entry(hash_table, key, list_head);
-	
+
 	/* Update the value if it already exists */
 	if (list_entry != NULL) {
 		list_entry->value = value;
@@ -96,10 +97,11 @@ void hash_table_v1_add_entry(struct hash_table_v1 *hash_table,
 	list_entry->value = value;
 	SLIST_INSERT_HEAD(list_head, list_entry, pointers);
 	
-	// unlock critical section
-	err = pthread_mutex_lock(&mutex);
-	if (err != 0)
-		exit(err);
+	// critical section unlock
+	error = pthread_mutex_unlock(&mutex);
+	if (error != 0) {
+		exit(error);
+	}
 }
 
 uint32_t hash_table_v1_get_value(struct hash_table_v1 *hash_table,
@@ -126,8 +128,9 @@ void hash_table_v1_destroy(struct hash_table_v1 *hash_table)
 	}
 	free(hash_table);
 
-	// destroy lock
-	int err = pthread_mutex_destroy(&mutex);
-	if (err != 0)
-		exit(err);
+	// destory lock 
+	int error = pthread_mutex_destroy(&mutex);
+	if (error != 0) {
+		exit(error);
+	}
 }
